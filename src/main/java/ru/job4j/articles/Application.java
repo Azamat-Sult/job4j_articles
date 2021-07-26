@@ -16,13 +16,15 @@ public class Application {
 
     public static final int TARGET_COUNT = 1_000_000;
 
+    public static final int TARGET_COUNT_STEP = 10_000;
+
     public static void main(String[] args) {
         var properties = loadProperties();
         var wordStore = new WordStore(properties);
         var articleStore = new ArticleStore(properties);
         var articleGenerator = new RandomArticleGenerator();
         var articleService = new SimpleArticleService(articleGenerator);
-        articleService.generate(wordStore, TARGET_COUNT, articleStore);
+        articleService.generate(wordStore, TARGET_COUNT, TARGET_COUNT_STEP, articleStore);
     }
 
     private static Properties loadProperties() {

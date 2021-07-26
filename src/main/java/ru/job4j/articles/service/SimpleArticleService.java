@@ -21,13 +21,18 @@ public class SimpleArticleService implements ArticleService {
     }
 
     @Override
-    public void generate(Store<Word> wordStore, int count, Store<Article> articleStore) {
+    public void generate(Store<Word> wordStore, int count, int step, Store<Article> articleStore) {
         LOGGER.info("Геренация статей в количестве {}", count);
         var words = wordStore.findAll();
-        var articles = IntStream.iterate(0, i -> i < count, i -> i + 1)
-                .peek(i -> LOGGER.info("Сгенерирована статья № {}", i))
-                .mapToObj((x) -> articleGenerator.generate(words))
-                .collect(Collectors.toList());
-        articles.forEach(articleStore::save);
+        int iterations = count / step;
+        for (int iteration = 0; iteration < iterations; iteration++) {
+            int start = iteration * step;
+            int end = start + step;
+            var articles = IntStream.iterate(start, i -> i < end, i -> i + 1)
+                    .peek(i -> LOGGER.info("Сгенерирована статья № {}", i))
+                    .mapToObj((x) -> articleGenerator.generate(words))
+                    .collect(Collectors.toList());
+            articles.forEach(articleStore::save);
+        }
     }
 }
